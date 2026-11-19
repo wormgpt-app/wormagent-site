@@ -93,7 +93,7 @@ if [ ! -f "$CFG" ]; then
   "$schema": "https://opencode.ai/config.json",
   "provider": {
     "wormgpt": {
-      "npm": "@ai-sdk/WormGPT-compatible",
+      "npm": "@ai-sdk/openai-compatible",
       "name": "WormGPT",
       "options": {
         "baseURL": "https://wormgpt.app/v1",

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wormagent — وكيل البرمجة في الطرفية</title>
+<meta name="description" content="Wormagent: وكيل برمجة يعمل في الطرفية. تثبيت بأمر واحد على Linux و macOS." />
+<style>
+  :root{
+    --bg:#07080c; --panel:#0e1118; --line:#1e2431; --txt:#e7ecf5; --muted:#93a0b8;
+    --brand:#7c5cff; --brand2:#22d3a6; --glow:rgba(124,92,255,.35);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font:16px/1.7 "Segoe UI",system-ui,-apple-system,"Noto Kufi Arabic",Tahoma,sans-serif;}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(14px);
+    background:rgba(7,8,12,.78);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+  .mark{width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 22px var(--glow)}
+  .nav nav{display:flex;gap:22px;font-size:14.5px;color:var(--muted)}
+  .nav nav a:hover{color:#fff}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;
+    font-weight:700;border:1px solid transparent;transition:.18s;cursor:pointer}
+  .btn.primary{background:linear-gradient(135deg,var(--brand),#5b7cff);color:#fff;
+    box-shadow:0 10px 30px -10px var(--brand)}
+  .btn.primary:hover{transform:translateY(-2px)}
+  .btn.ghost{border-color:var(--line);background:var(--panel);color:var(--txt)}
+  .btn.ghost:hover{border-color:#33405a}
+  .hero{padding:88px 0 64px;text-align:center;position:relative;overflow:hidden}
+  .hero:before{content:"";position:absolute;inset:-40% 20% auto 20%;height:520px;
+    background:radial-gradient(circle,var(--glow),transparent 62%);filter:blur(24px);z-index:-1}
+  .pill{display:inline-flex;gap:8px;align-items:center;padding:7px 14px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:13px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brand2);box-shadow:0 0 10px var(--brand2)}
+  h1{font-size:clamp(30px,5.4vw,54px);line-height:1.25;margin:20px 0 14px;font-weight:800}
+  h1 span{background:linear-gradient(120deg,var(--brand),var(--brand2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:18px;max-width:640px;margin:0 auto 30px}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .term{margin:42px auto 0;max-width:720px;text-align:right;background:var(--panel);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -40px #000}
+  .term .bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line)}
+  .term .bar i{width:11px;height:11px;border-radius:50%;background:#2a3244;display:block}
+  .term pre{margin:0;padding:20px;overflow:auto;direction:ltr;text-align:left;
+    font:14px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c9d4e8}
+  .term .c{color:var(--brand2)} .term .m{color:#6b7a94}
+  section{padding:74px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(23px,3vw,32px);margin:0 0 8px;font-weight:800}
+  .sub{color:var(--muted);margin:0 0 34px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.2s}
+  .card:hover{border-color:#2b3550;transform:translateY(-3px)}
+  .card h3{margin:12px 0 6px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:rgba(124,92,255,.13);border:1px solid rgba(124,92,255,.28);font-size:18px}
+  ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+  ol.steps li{counter-increment:s;position:relative;padding:16px 58px 16px 0;border-bottom:1px dashed var(--line)}
+  ol.steps li:last-child{border:0}
+  ol.steps li:before{content:counter(s);position:absolute;right:0;top:14px;width:34px;height:34px;
+    border-radius:10px;display:grid;place-items:center;font-weight:800;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:15px}
+  code{background:#111623;border:1px solid var(--line);border-radius:7px;padding:2px 7px;
+    font:13.5px ui-monospace,monospace;direction:ltr;display:inline-block}
+  .note{border:1px solid #3a2f1e;background:#1a1409;color:#f0c987;padding:14px 16px;
+    border-radius:12px;font-size:14px}
+  footer{padding:34px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  @media(max-width:640px){.nav nav{display:none}.hero{padding:64px 0 48px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><span class="mark"></span> Wormagent</div>
+    <nav>
+      <a href="#install">التثبيت</a>
+      <a href="#features">المزايا</a>
+      <a href="#download">التحميل</a>
+      <a href="#faq">أسئلة</a>
+    </nav>
+    <a class="btn primary" href="#install">ابدأ الآن</a>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span> Linux · macOS · Terminal</span>
+    <h1>وكيل برمجة يعمل <span>بجانبك في الطرفية</span></h1>
+    <p class="lead">يقرأ مشروعك، يكتب الكود، يشغّل الأوامر، ويصلح الأخطاء — بأمر واحد وبدون إعداد معقّد.</p>
+    <div class="cta">
+      <a class="btn primary" href="#download">⬇ تحميل الحزمة</a>
+      <a class="btn ghost" href="#install">طريقة التثبيت</a>
+    </div>
+
+    <div class="term">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <pre><span class="m">$</span> <span class="c">curl</span> -fsSL https://wormagent.net/install | bash
+<span class="m">✔ installed Wormagent v2.3.2 → ~/.Wormagent/bin/Wormagent</span>
+
+<span class="m">$</span> <span class="c">cd</span> my-project
+<span class="m">$</span> <span class="c">Wormagent</span></pre>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>لماذا Wormagent؟</h2>
+    <p class="sub">أدوات مصمّمة للعمل الحقيقي على المستودعات، لا للعروض التوضيحية.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">⌨️</div><h3>طرفية أولاً</h3><p>يعمل حيث تعمل أنت: SSH، حاويات، سيرفرات بلا واجهة رسومية.</p></div>
+      <div class="card"><div class="ico">🧠</div><h3>فهم كامل للمشروع</h3><p>فهرسة الملفات والبحث فيها قبل أي تعديل، لتغييرات دقيقة.</p></div>
+      <div class="card"><div class="ico">🛠️</div><h3>تنفيذ واختبار</h3><p>يشغّل الاختبارات والأوامر، ويصلح ما يفشل تلقائياً.</p></div>
+      <div class="card"><div class="ico">🔌</div><h3>مزوّدون متعددون</h3><p>اربط النموذج الذي تفضّله بمفتاح API واحد.</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>تحكم بالصلاحيات</h3><p>موافقة صريحة قبل أي أمر أو تعديل حسّاس.</p></div>
+      <div class="card"><div class="ico">⚡</div><h3>تثبيت فوري</h3><p>ملف تنفيذي واحد، بلا تبعيات ولا بيئة تشغيل.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>التثبيت</h2>
+    <p class="sub">ثلاث خطوات، ونظامك جاهز.</p>
+    <ol class="steps">
+      <li><b>نزّل السكربت أو الحزمة</b><br><code>curl -fsSL https://wormagent.net/install | bash</code></li>
+      <li><b>أضف المجلد إلى PATH</b><br><code>export PATH="$HOME/.Wormagent/bin:$PATH"</code></li>
+      <li><b>شغّل داخل مشروعك</b><br><code>cd my-project &amp;&amp; Wormagent</code></li>
+    </ol>
+    <p class="note">التثبيت اليدوي: نزّل الحزمة من قسم التحميل، ثم <code>unzip</code> و<code>./install-portable.sh</code>. تعمل بلا إنترنت.</p>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2>التحميل</h2>
+    <p class="sub">حزمة كاملة لنظام Linux x86_64 تحتوي نسختين (V1 و V2).</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Wormagent-full-linux-x64.zip</h3>
+        <p>193 م.ب — تتضمن الملفين التنفيذيين وسكربتات التثبيت وبصمات التحقق.</p>
+        <p style="margin-top:14px"><a class="btn primary" href="https://github.com/BlackXV2vip/wormagent-site/releases/latest">⬇ من GitHub Releases</a></p>
+      </div>
+      <div class="card">
+        <h3>التحقق من السلامة</h3>
+        <p>بعد التنزيل:</p>
+        <p style="margin-top:10px"><code>sha256sum Wormagent-full-linux-x64.zip</code></p>
+        <p style="margin-top:8px;font-size:13px">a61417ac201469926e8195cc64fe7731fc79a12d08c6bbf3715fd2495283e477</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>أسئلة شائعة</h2>
+    <p class="sub"></p>
+    <div class="grid">
+      <div class="card"><h3>ما المتطلبات؟</h3><p>Linux x86_64 أو macOS. لا يحتاج Node أو Python — ملف تنفيذي واحد.</p></div>
+      <div class="card"><h3>هل يعمل بلا إنترنت؟</h3><p>تثبيت الحزمة يعمل دون إنترنت؛ تشغيل النموذج يحتاج اتصالاً بالمزوّد.</p></div>
+      <div class="card"><h3>كيف أحدّث؟</h3><p><code>Wormagent upgrade</code> لآخر إصدار.</p></div>
+      <div class="card"><h3>كيف أحذفه؟</h3><p><code>Wormagent uninstall</code> مع الاحتفاظ بالإعدادات والجلسات.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <span>© <span id="y">2026</span> Wormagent</span>
+  <span>مبني على OpenCode · <a href="#install">التثبيت</a></span>
+</footer>
+<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>

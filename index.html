@@ -1,182 +1,398 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wormagent — وكيل البرمجة في الطرفية</title>
-<meta name="description" content="Wormagent: وكيل برمجة يعمل في الطرفية. تثبيت بأمر واحد على Linux و macOS." />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wormagent — وكيل البرمجة في طرفيتك</title>
+<meta name="description" content="Wormagent: وكيل برمجة يقرأ مشروعك، يكتب الكود، ينفّذ الأوامر ويصلح الأخطاء — كل ذلك من الطرفية.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23e6e6e6'/><path d='M8 11l4 10 4-7 4 7 4-10' stroke='%230b0b0c' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <style>
   :root{
-    --bg:#07080c; --panel:#0e1118; --line:#1e2431; --txt:#e7ecf5; --muted:#93a0b8;
-    --brand:#7c5cff; --brand2:#22d3a6; --glow:rgba(124,92,255,.35);
+    --bg:#0b0b0c; --bg2:#101012; --panel:#141416; --line:#26262b; --line2:#33333a;
+    --txt:#ececed; --dim:#9a9aa2; --dimmer:#6e6e77;
+    --acc:#d97757; --ok:#7bd88f;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,"Noto Kufi Arabic","Helvetica Neue",Arial,sans-serif;
+    --r:12px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--txt);
-    font:16px/1.7 "Segoe UI",system-ui,-apple-system,"Noto Kufi Arabic",Tahoma,sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.7 var(--sans);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(14px);
-    background:rgba(7,8,12,.78);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
-  .mark{width:30px;height:30px;border-radius:9px;
-    background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 22px var(--glow)}
-  .nav nav{display:flex;gap:22px;font-size:14.5px;color:var(--muted)}
-  .nav nav a:hover{color:#fff}
-  .btn{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;
-    font-weight:700;border:1px solid transparent;transition:.18s;cursor:pointer}
-  .btn.primary{background:linear-gradient(135deg,var(--brand),#5b7cff);color:#fff;
-    box-shadow:0 10px 30px -10px var(--brand)}
-  .btn.primary:hover{transform:translateY(-2px)}
-  .btn.ghost{border-color:var(--line);background:var(--panel);color:var(--txt)}
-  .btn.ghost:hover{border-color:#33405a}
-  .hero{padding:88px 0 64px;text-align:center;position:relative;overflow:hidden}
-  .hero:before{content:"";position:absolute;inset:-40% 20% auto 20%;height:520px;
-    background:radial-gradient(circle,var(--glow),transparent 62%);filter:blur(24px);z-index:-1}
-  .pill{display:inline-flex;gap:8px;align-items:center;padding:7px 14px;border-radius:999px;
-    border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:13px}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--brand2);box-shadow:0 0 10px var(--brand2)}
-  h1{font-size:clamp(30px,5.4vw,54px);line-height:1.25;margin:20px 0 14px;font-weight:800}
-  h1 span{background:linear-gradient(120deg,var(--brand),var(--brand2));
-    -webkit-background-clip:text;background-clip:text;color:transparent}
-  .lead{color:var(--muted);font-size:18px;max-width:640px;margin:0 auto 30px}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .term{margin:42px auto 0;max-width:720px;text-align:right;background:var(--panel);
-    border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -40px #000}
-  .term .bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line)}
-  .term .bar i{width:11px;height:11px;border-radius:50%;background:#2a3244;display:block}
-  .term pre{margin:0;padding:20px;overflow:auto;direction:ltr;text-align:left;
-    font:14px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c9d4e8}
-  .term .c{color:var(--brand2)} .term .m{color:#6b7a94}
-  section{padding:74px 0;border-top:1px solid var(--line)}
-  h2{font-size:clamp(23px,3vw,32px);margin:0 0 8px;font-weight:800}
-  .sub{color:var(--muted);margin:0 0 34px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;transition:.2s}
-  .card:hover{border-color:#2b3550;transform:translateY(-3px)}
-  .card h3{margin:12px 0 6px;font-size:17px}
-  .card p{margin:0;color:var(--muted);font-size:14.5px}
-  .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
-    background:rgba(124,92,255,.13);border:1px solid rgba(124,92,255,.28);font-size:18px}
-  ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
-  ol.steps li{counter-increment:s;position:relative;padding:16px 58px 16px 0;border-bottom:1px dashed var(--line)}
-  ol.steps li:last-child{border:0}
-  ol.steps li:before{content:counter(s);position:absolute;right:0;top:14px;width:34px;height:34px;
-    border-radius:10px;display:grid;place-items:center;font-weight:800;
-    background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:15px}
-  code{background:#111623;border:1px solid var(--line);border-radius:7px;padding:2px 7px;
-    font:13.5px ui-monospace,monospace;direction:ltr;display:inline-block}
-  .note{border:1px solid #3a2f1e;background:#1a1409;color:#f0c987;padding:14px 16px;
-    border-radius:12px;font-size:14px}
-  footer{padding:34px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;
-    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  @media(max-width:640px){.nav nav{display:none}.hero{padding:64px 0 48px}}
+  ::selection{background:#d9775740}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono);direction:ltr;unicode-bidi:isolate}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.82);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{height:60px;display:flex;align-items:center;gap:26px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-weight:700;
+    letter-spacing:.02em;font-size:15px}
+  .brand svg{width:22px;height:22px;display:block}
+  .links{display:flex;gap:22px;font-size:13.5px;color:var(--dim)}
+  .links a:hover{color:var(--txt)}
+  .nav .spacer{flex:1}
+  .ghost-btn{border:1px solid var(--line2);border-radius:8px;padding:7px 13px;font-size:13px;
+    color:var(--txt);transition:.15s}
+  .ghost-btn:hover{background:var(--panel);border-color:#4a4a54}
+
+  /* hero */
+  .hero{padding:76px 0 40px;position:relative}
+  .hero:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(900px 380px at 50% -12%,rgba(217,119,87,.13),transparent 70%),
+      linear-gradient(to bottom,rgba(255,255,255,.03),transparent 30%);
+  }
+  .hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(circle at 50% 0,#000 0,transparent 62%);
+    -webkit-mask-image:radial-gradient(circle at 50% 0,#000 0,transparent 62%);
+  }
+  h1{font-size:clamp(30px,4.6vw,52px);line-height:1.22;letter-spacing:-.015em;margin:0 0 16px;font-weight:800}
+  h1 .u{background:linear-gradient(100deg,#f2f2f2,#8f8f98);-webkit-background-clip:text;
+    background-clip:text;color:transparent}
+  .lead{color:var(--dim);font-size:17.5px;max-width:600px;margin:0 0 30px}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+    color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin-bottom:22px;
+    background:var(--panel)}
+  .kicker i{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px var(--ok);
+    display:block;animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* install box */
+  .install{display:flex;align-items:stretch;gap:0;max-width:640px;margin:0 0 14px;
+    border:1px solid var(--line2);border-radius:var(--r);background:var(--bg2);overflow:hidden}
+  .install .prompt{padding:13px 14px;color:var(--acc);font-family:var(--mono);font-size:13.5px;
+    border-inline-end:1px solid var(--line);display:flex;align-items:center;user-select:none}
+  .install code{flex:1;padding:13px 14px;font-family:var(--mono);font-size:13.5px;color:#dcdce0;
+    direction:ltr;text-align:left;white-space:nowrap;overflow:auto;display:flex;align-items:center}
+  .install button{border:0;border-inline-start:1px solid var(--line);background:transparent;
+    color:var(--dim);padding:0 15px;cursor:pointer;font:600 12px var(--mono);transition:.15s}
+  .install button:hover{background:var(--panel);color:var(--txt)}
+  .meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--dimmer);font-family:var(--mono);direction:ltr}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+
+  /* terminal */
+  .term{max-width:860px;margin:46px auto 0;border:1px solid var(--line2);border-radius:14px;
+    background:linear-gradient(#111113,#0d0d0f);box-shadow:0 40px 90px -50px #000,0 0 0 1px #000;
+    overflow:hidden}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);
+    background:#0f0f11}
+  .term-bar b{width:10px;height:10px;border-radius:50%;background:#2e2e34;display:block}
+  .term-bar span{font-family:var(--mono);font-size:11.5px;color:var(--dimmer);margin-inline-start:8px}
+  .term-body{padding:18px 20px 22px;font-family:var(--mono);font-size:13px;line-height:2;direction:ltr;
+    text-align:left;color:#c9c9cf;white-space:pre-wrap;word-break:break-word}
+  .term-body .c-user{color:var(--acc)}
+  .term-body .c-dim{color:#71717a}
+  .term-body .c-ok{color:var(--ok)}
+  .term-body .c-file{color:#8ab4f8}
+  .term-body .c-key{color:#e5c07b}
+  .caret{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;
+    animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  section{padding:88px 0;border-top:1px solid var(--line)}
+  .sec-head{margin-bottom:40px;max-width:620px}
+  h2{font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin:0 0 10px;font-weight:800}
+  .sec-head p{color:var(--dim);margin:0;font-size:16px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dimmer);margin-bottom:10px}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .card{background:var(--bg2);padding:26px 24px;transition:.2s}
+  .card:hover{background:#15151a}
+  .card svg{width:20px;height:20px;stroke:var(--acc);stroke-width:1.7;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;margin-bottom:14px}
+  .card h3{margin:0 0 6px;font-size:15.5px;font-weight:700}
+  .card p{margin:0;color:var(--dim);font-size:14px;line-height:1.75}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:0;flex-wrap:wrap}
+  .tab{background:none;border:0;color:var(--dim);padding:11px 14px;font:600 13px var(--mono);
+    cursor:pointer;border-bottom:2px solid transparent;direction:ltr}
+  .tab[aria-selected="true"]{color:var(--txt);border-bottom-color:var(--acc)}
+  .pane{display:none;padding:22px 0 0}
+  .pane.on{display:block}
+  .codebox{border:1px solid var(--line2);border-radius:var(--r);background:#0d0d0f;overflow:hidden}
+  .codebox .cb-head{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;
+    border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--dimmer)}
+  .codebox pre{margin:0;padding:16px 18px;overflow:auto;direction:ltr;text-align:left;
+    font:13px/1.9 var(--mono);color:#cfcfd6}
+  .codebox .hl{color:var(--acc)}
+
+  /* specs */
+  .specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .spec{background:var(--bg2);padding:20px}
+  .spec b{display:block;font-family:var(--mono);font-size:11px;color:var(--dimmer);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .spec span{font-size:14.5px}
+
+  /* faq */
+  details{border:1px solid var(--line);border-radius:var(--r);background:var(--bg2);margin-bottom:10px}
+  summary{cursor:pointer;padding:16px 18px;font-size:14.5px;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:12px}
+  summary::-webkit-details-marker{display:none}
+  summary:after{content:"+";font-family:var(--mono);color:var(--acc);font-size:18px;line-height:1}
+  details[open] summary:after{content:"–"}
+  details p{margin:0;padding:0 18px 16px;color:var(--dim);font-size:14px}
+
+  .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:34px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:9px;
+    font-weight:700;font-size:14px;border:1px solid transparent;transition:.18s}
+  .btn.primary{background:var(--txt);color:#0b0b0c}
+  .btn.primary:hover{background:#fff;transform:translateY(-1px)}
+  .btn.outline{border-color:var(--line2);color:var(--txt)}
+  .btn.outline:hover{background:var(--panel)}
+
+  footer{border-top:1px solid var(--line);padding:38px 0;color:var(--dimmer);font-size:13px}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+  .foot a:hover{color:var(--txt)}
+  .foot .note{font-family:var(--mono);font-size:11.5px}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,14px);opacity:0;
+    background:#e9e9ec;color:#0b0b0c;padding:9px 16px;border-radius:8px;font:600 12.5px var(--mono);
+    transition:.25s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media(max-width:900px){
+    .cards{grid-template-columns:1fr 1fr}
+    .specs{grid-template-columns:1fr 1fr}
+    .links{display:none}
+  }
+  @media(max-width:600px){
+    .cards{grid-template-columns:1fr}
+    .hero{padding:52px 0 26px}
+    .install code{font-size:11.5px}
+    section{padding:64px 0}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap nav">
-    <div class="logo"><span class="mark"></span> Wormagent</div>
-    <nav>
-      <a href="#install">التثبيت</a>
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4 9 5-7 5 7 4-9" stroke="#d97757" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      wormagent
+    </a>
+    <nav class="links">
       <a href="#features">المزايا</a>
-      <a href="#download">التحميل</a>
+      <a href="#install">التثبيت</a>
+      <a href="#specs">المنصّات</a>
       <a href="#faq">أسئلة</a>
     </nav>
-    <a class="btn primary" href="#install">ابدأ الآن</a>
+    <div class="spacer"></div>
+    <a class="ghost-btn" href="https://github.com/BlackXV2vip/wormagent-site/releases/latest" target="_blank" rel="noopener">التنزيل</a>
   </div>
 </header>
 
-<main>
+<main id="top">
 <div class="hero">
   <div class="wrap">
-    <span class="pill"><span class="dot"></span> Linux · macOS · Terminal</span>
-    <h1>وكيل برمجة يعمل <span>بجانبك في الطرفية</span></h1>
-    <p class="lead">يقرأ مشروعك، يكتب الكود، يشغّل الأوامر، ويصلح الأخطاء — بأمر واحد وبدون إعداد معقّد.</p>
-    <div class="cta">
-      <a class="btn primary" href="#download">⬇ تحميل الحزمة</a>
-      <a class="btn ghost" href="#install">طريقة التثبيت</a>
+    <span class="kicker"><i></i> v2.3.2 — Linux x86_64</span>
+    <h1>وكيل البرمجة<br><span class="u">الذي يعيش في طرفيتك</span></h1>
+    <p class="lead">يفتح مشروعك، يقرأ الملفات، يكتب التعديلات، يشغّل الاختبارات، ويصلح ما فشل — بلا مغادرة الطرفية.</p>
+
+    <div class="install">
+      <span class="prompt">$</span>
+      <code id="cmd">curl -fsSL https://wormagent.net/install | bash</code>
+      <button id="copy" aria-label="نسخ الأمر">COPY</button>
+    </div>
+    <div class="meta">
+      <span>● ملف تنفيذي واحد</span>
+      <span>● بلا تبعيات</span>
+      <span>● MIT-based</span>
     </div>
 
     <div class="term">
-      <div class="bar"><i></i><i></i><i></i></div>
-      <pre><span class="m">$</span> <span class="c">curl</span> -fsSL https://wormagent.net/install | bash
-<span class="m">✔ installed Wormagent v2.3.2 → ~/.Wormagent/bin/Wormagent</span>
-
-<span class="m">$</span> <span class="c">cd</span> my-project
-<span class="m">$</span> <span class="c">Wormagent</span></pre>
+      <div class="term-bar"><b></b><b></b><b></b><span>~/projects/api</span></div>
+      <div class="term-body"><span class="c-user">$</span> wormagent
+<span class="c-dim">› reading workspace</span>  <span class="c-file">42 files</span> · <span class="c-file">6 dirs</span>
+<span class="c-dim">› task</span> fix the failing auth test
+<span class="c-dim">∘ open</span> src/auth/session.ts
+<span class="c-dim">∘ plan</span> refresh token 3×
+<span class="c-key">edit</span> src/auth/session.ts  <span class="c-dim">+12 −4</span>
+<span class="c-dim">$</span> npm test
+<span class="c-ok">✓ 38 passed · 0 failed</span>
+<span class="c-dim">done in 41s</span> <span class="caret"></span></div>
     </div>
   </div>
 </div>
 
 <section id="features">
   <div class="wrap">
-    <h2>لماذا Wormagent؟</h2>
-    <p class="sub">أدوات مصمّمة للعمل الحقيقي على المستودعات، لا للعروض التوضيحية.</p>
-    <div class="grid">
-      <div class="card"><div class="ico">⌨️</div><h3>طرفية أولاً</h3><p>يعمل حيث تعمل أنت: SSH، حاويات، سيرفرات بلا واجهة رسومية.</p></div>
-      <div class="card"><div class="ico">🧠</div><h3>فهم كامل للمشروع</h3><p>فهرسة الملفات والبحث فيها قبل أي تعديل، لتغييرات دقيقة.</p></div>
-      <div class="card"><div class="ico">🛠️</div><h3>تنفيذ واختبار</h3><p>يشغّل الاختبارات والأوامر، ويصلح ما يفشل تلقائياً.</p></div>
-      <div class="card"><div class="ico">🔌</div><h3>مزوّدون متعددون</h3><p>اربط النموذج الذي تفضّله بمفتاح API واحد.</p></div>
-      <div class="card"><div class="ico">🔒</div><h3>تحكم بالصلاحيات</h3><p>موافقة صريحة قبل أي أمر أو تعديل حسّاس.</p></div>
-      <div class="card"><div class="ico">⚡</div><h3>تثبيت فوري</h3><p>ملف تنفيذي واحد، بلا تبعيات ولا بيئة تشغيل.</p></div>
+    <div class="sec-head">
+      <div class="eyebrow">capabilities</div>
+      <h2>أدوات تعمل على مشروع حقيقي</h2>
+      <p>لا لقطات عرض. يتعامل مع ملفاتك وأوامرك وأخطائك كما هي.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+        <h3>سياق كامل للمشروع</h3>
+        <p>فهرسة وقراءة الملفات قبل أي تعديل، فيفهم البنية بدل التخمين.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 17l5-5-5-5M12 19h8"/></svg>
+        <h3>تنفيذ حقيقي</h3>
+        <p>يشغّل الأوامر والاختبارات داخل مساحة عملك، ويقرأ المخرجات.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>
+        <h3>مزوّد تختاره</h3>
+        <p>اربط النموذج الذي يناسبك بمفتاح API واحد، وبدّل وقت الحاجة.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+        <h3>صلاحيات تحت سيطرتك</h3>
+        <p>موافقة صريحة قبل أي أمر حسّاس أو كتابة خارج النطاق.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>
+        <h3>جلسات متابعة</h3>
+        <p>استأنف أي جلسة سابقة بالسياق نفسه، أو فرّع نسخة للتجربة.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>
+        <h3>يعمل بلا واجهة</h3>
+        <p>عبر SSH أو داخل حاوية أو على سيرفر بلا شاشة — نفس التجربة.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="install">
   <div class="wrap">
-    <h2>التثبيت</h2>
-    <p class="sub">ثلاث خطوات، ونظامك جاهز.</p>
-    <ol class="steps">
-      <li><b>نزّل السكربت أو الحزمة</b><br><code>curl -fsSL https://wormagent.net/install | bash</code></li>
-      <li><b>أضف المجلد إلى PATH</b><br><code>export PATH="$HOME/.Wormagent/bin:$PATH"</code></li>
-      <li><b>شغّل داخل مشروعك</b><br><code>cd my-project &amp;&amp; Wormagent</code></li>
-    </ol>
-    <p class="note">التثبيت اليدوي: نزّل الحزمة من قسم التحميل، ثم <code>unzip</code> و<code>./install-portable.sh</code>. تعمل بلا إنترنت.</p>
+    <div class="sec-head">
+      <div class="eyebrow">install</div>
+      <h2>ثبّت في أقل من دقيقة</h2>
+      <p>اختر الطريقة المناسبة لبيئتك.</p>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-pane="p1">curl</button>
+      <button class="tab" role="tab" aria-selected="false" data-pane="p2">zip</button>
+      <button class="tab" role="tab" aria-selected="false" data-pane="p3">verify</button>
+    </div>
+
+    <div class="pane on" id="p1">
+      <div class="codebox">
+        <div class="cb-head"><span>shell</span><span>1 command</span></div>
+<pre><span class="hl">curl</span> -fsSL https://wormagent.net/install | bash
+
+<span class="hl">export</span> PATH="$HOME/.Wormagent/bin:$PATH"
+cd my-project &amp;&amp; <span class="hl">wormagent</span></pre>
+      </div>
+    </div>
+
+    <div class="pane" id="p2">
+      <div class="codebox">
+        <div class="cb-head"><span>manual</span><span>offline</span></div>
+<pre><span class="hl">curl</span> -LO https://github.com/BlackXV2vip/wormagent-site/releases/latest/download/Wormagent-full-linux-x64.zip
+<span class="hl">unzip</span> Wormagent-full-linux-x64.zip
+cd Wormagent-full-linux-x64
+<span class="hl">./install-portable.sh</span></pre>
+      </div>
+    </div>
+
+    <div class="pane" id="p3">
+      <div class="codebox">
+        <div class="cb-head"><span>sha256</span><span>integrity</span></div>
+<pre>a61417ac201469926e8195cc64fe7731fc79a12d08c6bbf3715fd2495283e477  Wormagent-full-linux-x64.zip</pre>
+      </div>
+    </div>
   </div>
 </section>
 
-<section id="download">
+<section id="specs">
   <div class="wrap">
-    <h2>التحميل</h2>
-    <p class="sub">حزمة كاملة لنظام Linux x86_64 تحتوي نسختين (V1 و V2).</p>
-    <div class="grid">
-      <div class="card">
-        <h3>Wormagent-full-linux-x64.zip</h3>
-        <p>193 م.ب — تتضمن الملفين التنفيذيين وسكربتات التثبيت وبصمات التحقق.</p>
-        <p style="margin-top:14px"><a class="btn primary" href="https://github.com/BlackXV2vip/wormagent-site/releases/latest">⬇ من GitHub Releases</a></p>
-      </div>
-      <div class="card">
-        <h3>التحقق من السلامة</h3>
-        <p>بعد التنزيل:</p>
-        <p style="margin-top:10px"><code>sha256sum Wormagent-full-linux-x64.zip</code></p>
-        <p style="margin-top:8px;font-size:13px">a61417ac201469926e8195cc64fe7731fc79a12d08c6bbf3715fd2495283e477</p>
-      </div>
+    <div class="sec-head">
+      <div class="eyebrow">platform</div>
+      <h2>متطلبات التشغيل</h2>
+      <p>خفيف على النظام، ثقيل على المهام.</p>
+    </div>
+    <div class="specs">
+      <div class="spec"><b>OS</b><span>Linux x86_64</span></div>
+      <div class="spec"><b>Binary</b><span>242 MB</span></div>
+      <div class="spec"><b>Runtime</b><span>لا شيء (static)</span></div>
+      <div class="spec"><b>Network</b><span>مطلوب للمزوّد</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/BlackXV2vip/wormagent-site/releases/latest" target="_blank" rel="noopener">⬇ تحميل الحزمة الكاملة</a>
+      <a class="btn outline" href="#install">طريقة التثبيت</a>
     </div>
   </div>
 </section>
 
 <section id="faq">
   <div class="wrap">
-    <h2>أسئلة شائعة</h2>
-    <p class="sub"></p>
-    <div class="grid">
-      <div class="card"><h3>ما المتطلبات؟</h3><p>Linux x86_64 أو macOS. لا يحتاج Node أو Python — ملف تنفيذي واحد.</p></div>
-      <div class="card"><h3>هل يعمل بلا إنترنت؟</h3><p>تثبيت الحزمة يعمل دون إنترنت؛ تشغيل النموذج يحتاج اتصالاً بالمزوّد.</p></div>
-      <div class="card"><h3>كيف أحدّث؟</h3><p><code>Wormagent upgrade</code> لآخر إصدار.</p></div>
-      <div class="card"><h3>كيف أحذفه؟</h3><p><code>Wormagent uninstall</code> مع الاحتفاظ بالإعدادات والجلسات.</p></div>
+    <div class="sec-head">
+      <div class="eyebrow">faq</div>
+      <h2>أسئلة متكررة</h2>
     </div>
+    <details open>
+      <summary>هل يحتاج Node.js أو Python؟</summary>
+      <p>لا. الملف التنفيذي مستقل تماماً ولا يعتمد على أي بيئة تشغيل مثبّتة.</p>
+    </details>
+    <details>
+      <summary>هل يعمل بدون إنترنت؟</summary>
+      <p>التثبيت من الحزمة يعمل دون إنترنت. أما تشغيل الوكيل فيحتاج اتصالاً بمزوّد النموذج.</p>
+    </details>
+    <details>
+      <summary>كيف أحدّث النسخة؟</summary>
+      <p><code class="mono">wormagent upgrade</code> لآخر إصدار، أو أعد تنزيل الحزمة من صفحة الإصدارات.</p>
+    </details>
+    <details>
+      <summary>كيف أحذفه؟</summary>
+      <p><code class="mono">wormagent uninstall</code> — يحذف الملف التنفيذي ويحتفظ بالإعدادات والجلسات.</p>
+    </details>
   </div>
 </section>
 </main>
 
-<footer class="wrap">
-  <span>© <span id="y">2026</span> Wormagent</span>
-  <span>مبني على OpenCode · <a href="#install">التثبيت</a></span>
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="y">2026</span> Wormagent</span>
+    <span class="note">built on opencode (MIT) · wormagent.net</span>
+  </div>
 </footer>
-<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+
+<div class="toast" id="toast">تم النسخ</div>
+
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+
+  const copyBtn = document.getElementById('copy');
+  copyBtn.addEventListener('click', async () => {
+    const text = document.getElementById('cmd').textContent.trim();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = text; document.body.appendChild(t); t.select();
+      document.execCommand('copy'); t.remove();
+    }
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    copyBtn.textContent = 'COPIED';
+    setTimeout(() => { toast.classList.remove('show'); copyBtn.textContent = 'COPY'; }, 1600);
+  });
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById(tab.dataset.pane).classList.add('on');
+    });
+  });
+</script>
 </body>
 </html>

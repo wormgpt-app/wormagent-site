@@ -84,6 +84,59 @@ exec "$BIN" "$@"
 LAUNCHER
 chmod 755 "$INSTALL_DIR/Wormagent"
 
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+CFG="$CONFIG_DIR/opencode.json"
+if [ ! -f "$CFG" ]; then
+  mkdir -p "$CONFIG_DIR/.secrets"
+  cat > "$CFG" <<'CFGEOF'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "wormgpt": {
+      "npm": "@ai-sdk/WormGPT-compatible",
+      "name": "WormGPT",
+      "options": {
+        "baseURL": "https://wormgpt.app/v1",
+        "apiKey": "{file:.secrets/wormgpt.key}"
+      },
+      "models": {
+        "wormgpt-line-v8": {
+          "name": "WormGPT Line V8",
+          "modelID": "wormgpt-line-v8",
+          "limit": { "context": 1000000, "output": 131072 },
+          "capabilities": {
+            "tools": true,
+            "input": ["text"],
+            "output": ["text"],
+            "reasoning": { "supported": true, "effort": ["low", "high", "max"] }
+          },
+          "compatibility": {
+            "maxTokensField": "max_tokens",
+            "streamUsage": true,
+            "requireReasoning": false,
+            "reasoningField": "reasoning_content"
+          },
+          "body": { "thinking": true, "reasoning_effort": "high" },
+          "reasoning": true,
+          "interleaved": { "field": "reasoning_content" }
+        }
+      }
+    }
+  },
+  "enabled_providers": ["wormgpt"],
+  "model": "wormgpt/wormgpt-line-v8"
+}
+CFGEOF
+  echo "${DIM}Wrote${NC} $CFG ${DIM}(wormgpt.app only)${NC}"
+else
+  echo "${DIM}Keeping existing${NC} $CFG"
+fi
+if [ -n "${WORMAGENT_API_KEY:-}" ]; then
+  printf '%s' "$WORMAGENT_API_KEY" > "$CONFIG_DIR/.secrets/wormgpt.key"
+  chmod 600 "$CONFIG_DIR/.secrets/wormgpt.key"
+  echo "${DIM}Saved${NC} API key ${DIM}→${NC} $CONFIG_DIR/.secrets/wormgpt.key"
+fi
+
 if [ "$NO_PATH" = false ]; then
   for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
     [ -f "$rc" ] || continue

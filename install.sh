@@ -46,6 +46,9 @@ set -euo pipefail
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BIN="$SELF_DIR/wormagent-bin"
 [ -x "$BIN" ] || BIN="$SELF_DIR/opencode"
+if [ ! -x "$BIN" ]; then
+  BIN="$(ls -1 "$SELF_DIR"/Wormagent-v* 2>/dev/null | sort -V | tail -1 || true)"
+fi
 
 banner() {
   [ -n "${WORMAGENT_NO_BANNER:-}" ] && return 0
@@ -53,11 +56,30 @@ banner() {
   local l1='█   █ █▀▀█ █▀▀█ █▄ ▄█ █▀▀█ █▀▀█ █▀▀▀ █  █ ▀▀█▀▀'
   local l2='█ █ █ █  █ █▀▀▄ █ ▀ █ █▀▀█ █ ▀▀ █▀▀  █▄ █   █  '
   local l3=' ▀ ▀  ▀▀▀▀ ▀  ▀ ▀   ▀ ▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀ ▀▀   ▀  '
-  printf '\033[38;5;209m%s\n%s\n%s\033[0m\n' "$l1" "$l2" "$l3"
-  printf '  \033[2mterminal coding agent\033[0m\n\n'
+  printf '[38;5;209m%s
+%s
+%s[0m
+' "$l1" "$l2" "$l3"
+  printf '  [2mterminal coding agent[0m
+
+'
 }
 
-[ $# -eq 0 ] && banner
+# Show the banner only when an interactive TUI is about to start:
+# no arguments, or a directory argument. Never for subcommands or flags.
+show_banner=false
+if [ $# -eq 0 ]; then
+  show_banner=true
+else
+  case "$1" in
+    upgrade|update|uninstall|acp|api|debug|auth|mcp|plugin|models|stats|mini|run|session|service|reload|pair|serve) ;;
+    -*) ;;
+    *) [ -d "$1" ] && show_banner=true ;;
+  esac
+fi
+[ "$show_banner" = true ] && banner
+
+[ -n "$BIN" ] && [ -x "$BIN" ] || { echo "WormAgent binary not found next to this launcher" >&2; exit 127; }
 exec "$BIN" "$@"
 LAUNCHER
 chmod 755 "$INSTALL_DIR/Wormagent"
